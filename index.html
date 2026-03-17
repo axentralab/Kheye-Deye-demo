@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khey Deye – Flavors That Speak</title>
+<meta name="description" content="Khey Deye Restaurant – Authentic flavors, modern dining. Order online for delivery or pickup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson:   #C8102E;
+    --flame:     #E8420A;
+    --amber:     #F5A623;
+    --gold:      #FFD166;
+    --cream:     #FFF8F0;
+    --dark:      #1A0A00;
+    --charcoal:  #2E1A0E;
+    --muted:     #7A5C44;
+    --white:     #FFFFFF;
+    --shadow:    rgba(26,10,0,.18);
+    --radius:    14px;
+    --transition: .32s cubic-bezier(.4,0,.2,1);
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;font-size:16px}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden}
+  a{text-decoration:none;color:inherit}
+  img{max-width:100%;display:block}
+  button{cursor:pointer;border:none;font-family:inherit}
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--cream)}
+  ::-webkit-scrollbar-thumb{background:var(--flame);border-radius:3px}
+
+  /* ── PAGES ── */
+  .page{display:none;animation:fadeIn .45s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  /* ── NAV ── */
+  nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 5%;background:rgba(26,10,0,.96);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;height:68px;border-bottom:2px solid var(--flame)}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--gold);letter-spacing:.5px}
+  .nav-logo span{color:var(--flame)}
+  .nav-links{display:flex;gap:1.8rem;align-items:center}
+  .nav-links a{color:rgba(255,255,255,.85);font-size:.92rem;font-weight:500;transition:color var(--transition);position:relative}
+  .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--amber);transition:width var(--transition)}
+  .nav-links a:hover{color:var(--amber)}
+  .nav-links a:hover::after{width:100%}
+  .cart-btn{background:var(--flame);color:#fff;padding:.5rem 1.1rem;border-radius:50px;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.5rem;transition:background var(--transition)}
+  .cart-btn:hover{background:var(--crimson)}
+  .cart-count{background:var(--gold);color:var(--dark);border-radius:50%;width:20px;height:20px;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+  .hamburger span{width:24px;height:2px;background:var(--gold);display:block;transition:var(--transition)}
+
+  /* ── HERO ── */
+  .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:8rem 8% 4rem;gap:4rem;background:linear-gradient(135deg,#1A0A00 55%,#3B1505 100%);position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 70% 50%,rgba(232,66,10,.18),transparent);pointer-events:none}
+  .hero-badge{display:inline-block;background:var(--flame);color:#fff;font-size:.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:.35rem 1rem;border-radius:50px;margin-bottom:1.2rem}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.8rem);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:1rem}
+  .hero h1 em{color:var(--gold);font-style:normal;display:block}
+  .hero p{color:rgba(255,255,255,.7);font-size:1.1rem;line-height:1.7;max-width:420px;margin-bottom:2rem}
+  .hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+  .btn-primary{background:linear-gradient(135deg,var(--flame),var(--crimson));color:#fff;padding:.9rem 2.2rem;border-radius:50px;font-weight:700;font-size:1rem;letter-spacing:.3px;transition:transform var(--transition),box-shadow var(--transition);box-shadow:0 6px 24px rgba(232,66,10,.45)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(232,66,10,.55)}
+  .btn-outline{background:transparent;color:var(--gold);border:2px solid var(--gold);padding:.85rem 2rem;border-radius:50px;font-weight:600;font-size:1rem;transition:var(--transition)}
+  .btn-outline:hover{background:var(--gold);color:var(--dark)}
+  .hero-img{position:relative;display:flex;align-items:center;justify-content:center}
+  .hero-img-circle{width:460px;height:460px;border-radius:50%;background:linear-gradient(135deg,var(--flame),var(--amber));display:flex;align-items:center;justify-content:center;font-size:12rem;box-shadow:0 0 80px rgba(232,66,10,.4);animation:float 4s ease-in-out infinite;position:relative}
+  .hero-img-circle::after{content:'';position:absolute;inset:-12px;border-radius:50%;border:3px dashed rgba(245,166,35,.4);animation:spin 20s linear infinite}
+  .hero-stat{position:absolute;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:.8rem 1.2rem;color:#fff}
+  .hero-stat strong{display:block;font-size:1.3rem;font-weight:700;color:var(--gold)}
+  .hero-stat span{font-size:.78rem;color:rgba(255,255,255,.7)}
+  .stat1{top:10%;right:-4%}
+  .stat2{bottom:15%;left:-4%}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* ── SECTION HEADINGS ── */
+  .section-label{font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--flame);margin-bottom:.5rem}
+  .section-title{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:900;color:var(--dark);line-height:1.2}
+  .section-title em{color:var(--flame);font-style:normal}
+  .section-sub{color:var(--muted);font-size:1rem;line-height:1.7;max-width:520px;margin-top:.6rem}
+  section{padding:6rem 8%}
+
+  /* ── FEATURED CAROUSEL ── */
+  .featured{background:var(--white);padding:5rem 8%}
+  .featured-header{text-align:center;margin-bottom:3rem}
+  .carousel-wrap{position:relative;overflow:hidden}
+  .carousel-track{display:flex;gap:1.5rem;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .dish-card{min-width:280px;background:var(--cream);border-radius:20px;overflow:hidden;box-shadow:0 4px 20px var(--shadow);transition:transform var(--transition),box-shadow var(--transition);cursor:pointer}
+  .dish-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(232,66,10,.2)}
+  .dish-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:6rem;background:linear-gradient(135deg,#fff5eb,#ffe8d0);position:relative}
+  .dish-badge{position:absolute;top:12px;right:12px;background:var(--flame);color:#fff;font-size:.7rem;font-weight:700;padding:.25rem .65rem;border-radius:50px;text-transform:uppercase;letter-spacing:.8px}
+  .dish-info{padding:1.2rem}
+  .dish-info h3{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:.3rem}
+  .dish-info p{color:var(--muted);font-size:.85rem;margin-bottom:.8rem;line-height:1.5}
+  .dish-footer{display:flex;align-items:center;justify-content:space-between}
+  .dish-price{font-size:1.2rem;font-weight:700;color:var(--flame)}
+  .add-btn{background:var(--flame);color:#fff;border-radius:50px;padding:.4rem 1rem;font-size:.85rem;font-weight:600;transition:var(--transition)}
+  .add-btn:hover{background:var(--crimson);transform:scale(1.05)}
+  .carousel-nav{display:flex;justify-content:center;gap:1rem;margin-top:2rem}
+  .carousel-nav button{width:44px;height:44px;border-radius:50%;border:2px solid var(--flame);background:transparent;color:var(--flame);font-size:1.2rem;font-weight:700;transition:var(--transition)}
+  .carousel-nav button:hover{background:var(--flame);color:#fff}
+
+  /* ── MENU PAGE ── */
+  .menu-hero{background:linear-gradient(135deg,#1A0A00,#3B1505);padding:8rem 8% 4rem;text-align:center}
+  .menu-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);color:var(--white);font-weight:900}
+  .menu-hero p{color:rgba(255,255,255,.7);margin-top:.8rem;font-size:1.05rem}
+  .menu-cats{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;padding:2rem 8% 0;background:linear-gradient(180deg,#3B1505 0%,var(--cream) 60%)}
+  .cat-btn{padding:.65rem 1.6rem;border-radius:50px;border:2px solid var(--flame);background:transparent;color:var(--flame);font-weight:600;font-size:.9rem;transition:var(--transition)}
+  .cat-btn.active,.cat-btn:hover{background:var(--flame);color:#fff}
+  .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.8rem;padding:3rem 8% 6rem}
+  .menu-item{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 4px 18px var(--shadow);transition:var(--transition)}
+  .menu-item:hover{transform:translateY(-6px);box-shadow:0 14px 36px rgba(232,66,10,.18)}
+  .menu-item.hidden{display:none}
+
+  /* ── CART SIDEBAR ── */
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;opacity:0;pointer-events:none;transition:opacity var(--transition)}
+  .cart-overlay.open{opacity:1;pointer-events:all}
+  .cart-sidebar{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--white);z-index:2001;transform:translateX(100%);transition:transform var(--transition);display:flex;flex-direction:column;box-shadow:-8px 0 40px var(--shadow)}
+  .cart-sidebar.open{transform:none}
+  .cart-header{padding:1.5rem;border-bottom:2px solid var(--cream);display:flex;justify-content:space-between;align-items:center;background:var(--dark)}
+  .cart-header h2{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.4rem}
+  .cart-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.5rem;cursor:pointer;transition:color var(--transition)}
+  .cart-close:hover{color:var(--flame)}
+  .cart-body{flex:1;overflow-y:auto;padding:1rem}
+  .cart-item{display:flex;gap:1rem;align-items:center;padding:1rem;border-radius:12px;margin-bottom:.8rem;background:var(--cream);transition:var(--transition)}
+  .cart-item-emoji{font-size:2.5rem;min-width:56px;text-align:center}
+  .cart-item-info{flex:1}
+  .cart-item-info h4{font-weight:600;font-size:.95rem;margin-bottom:.2rem}
+  .cart-item-info span{color:var(--flame);font-weight:700}
+  .qty-ctrl{display:flex;align-items:center;gap:.5rem;margin-top:.4rem}
+  .qty-ctrl button{width:26px;height:26px;border-radius:50%;background:var(--flame);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+  .qty-ctrl button:hover{background:var(--crimson)}
+  .qty-ctrl span{font-weight:700;min-width:20px;text-align:center}
+  .remove-btn{background:none;border:none;color:#ccc;font-size:1.1rem;cursor:pointer;transition:color var(--transition)}
+  .remove-btn:hover{color:var(--crimson)}
+  .cart-empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+  .cart-empty .empty-icon{font-size:4rem;margin-bottom:1rem;display:block}
+  .cart-footer{padding:1.5rem;border-top:2px solid var(--cream);background:var(--white)}
+  .cart-total{display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+  .cart-total span:last-child{color:var(--flame)}
+
+  /* ── CHECKOUT PAGE ── */
+  .checkout-wrap{padding:8rem 8% 4rem;max-width:1100px;margin:0 auto}
+  .checkout-wrap h1{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;margin-bottom:.5rem}
+  .checkout-wrap p.sub{color:var(--muted);margin-bottom:2.5rem}
+  .checkout-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:2rem;align-items:start}
+  .checkout-form{background:var(--white);border-radius:20px;padding:2rem;box-shadow:0 4px 20px var(--shadow)}
+  .checkout-form h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:2px solid var(--cream);color:var(--flame)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+  .form-row.full{grid-template-columns:1fr}
+  .form-group{display:flex;flex-direction:column;gap:.4rem}
+  .form-group label{font-size:.85rem;font-weight:600;color:var(--muted)}
+  .form-group input,.form-group select,.form-group textarea{border:2px solid #eee;border-radius:10px;padding:.75rem 1rem;font-family:inherit;font-size:.95rem;transition:border-color var(--transition);outline:none;background:var(--cream)}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--flame)}
+  .payment-options{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1rem 0}
+  .pay-opt{border:2px solid #eee;border-radius:12px;padding:1rem;text-align:center;cursor:pointer;transition:var(--transition);font-weight:500;font-size:.9rem}
+  .pay-opt:hover,.pay-opt.selected{border-color:var(--flame);background:rgba(232,66,10,.06);color:var(--flame)}
+  .pay-opt .pay-icon{font-size:1.8rem;display:block;margin-bottom:.3rem}
+  .order-summary{background:var(--white);border-radius:20px;padding:1.8rem;box-shadow:0 4px 20px var(--shadow);position:sticky;top:80px}
+  .order-summary h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1.2rem;color:var(--flame);border-bottom:2px solid var(--cream);padding-bottom:.6rem}
+  .summary-item{display:flex;justify-content:space-between;margin-bottom:.6rem;font-size:.93rem}
+  .summary-total{display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;border-top:2px solid var(--cream);margin-top:.8rem;padding-top:.8rem}
+  .summary-total span:last-child{color:var(--flame)}
+
+  /* ── ORDER CONFIRMATION ── */
+  .confirm-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A0A00,#3B1505);padding:6rem 5%}
+  .confirm-card{background:var(--white);border-radius:28px;padding:3rem;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .confirm-icon{font-size:5rem;margin-bottom:1rem;animation:pop .5s ease}
+  @keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+  .confirm-card h2{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--flame);margin-bottom:.5rem}
+  .confirm-card p{color:var(--muted);margin-bottom:.4rem}
+  .order-id{font-size:1.5rem;font-weight:800;color:var(--dark);letter-spacing:2px;margin:.6rem 0}
+  .tracking-steps{display:flex;justify-content:space-between;margin:2rem 0;position:relative}
+  .tracking-steps::before{content:'';position:absolute;top:24px;left:10%;right:10%;height:3px;background:#eee}
+  .tracking-steps::after{content:'';position:absolute;top:24px;left:10%;width:30%;height:3px;background:linear-gradient(90deg,var(--flame),var(--amber));animation:progress 2s ease forwards}
+  @keyframes progress{from{width:5%}to{width:30%}}
+  .step{display:flex;flex-direction:column;align-items:center;gap:.5rem;flex:1}
+  .step-dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:3px solid #eee;background:#fff;position:relative;z-index:1}
+  .step.done .step-dot{background:var(--flame);border-color:var(--flame);color:#fff}
+  .step-label{font-size:.75rem;font-weight:600;color:var(--muted);text-align:center}
+
+  /* ── ABOUT PAGE ── */
+  .about-hero{background:linear-gradient(135deg,#1A0A00,#3B1505);padding:8rem 8% 5rem;text-align:center}
+  .about-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);color:var(--white);font-weight:900;margin-bottom:.8rem}
+  .about-hero p{color:rgba(255,255,255,.7);font-size:1.1rem;max-width:600px;margin:0 auto}
+  .about-story{display:grid;grid-template-columns:1fr 1fr;gap:4rem;padding:6rem 8%;align-items:center}
+  .about-img-box{border-radius:24px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ffe8d0,#ffd4b0);height:420px;font-size:10rem;box-shadow:0 12px 40px var(--shadow)}
+  .about-text .section-label{margin-bottom:.5rem}
+  .about-text h2{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;margin-bottom:1rem;line-height:1.2}
+  .about-text p{color:var(--muted);line-height:1.8;margin-bottom:1rem}
+  .chefs{padding:0 8% 6rem;text-align:center}
+  .chefs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem}
+  .chef-card{background:var(--white);border-radius:20px;padding:2rem 1.5rem;box-shadow:0 4px 20px var(--shadow);transition:var(--transition)}
+  .chef-card:hover{transform:translateY(-6px)}
+  .chef-avatar{font-size:5rem;margin-bottom:1rem}
+  .chef-card h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:.2rem}
+  .chef-card .role{color:var(--flame);font-size:.85rem;font-weight:600;margin-bottom:.6rem}
+  .chef-card p{color:var(--muted);font-size:.87rem;line-height:1.6}
+  .gallery{padding:0 8% 6rem}
+  .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:200px 200px;gap:1rem;margin-top:2rem}
+  .gal-item{border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(135deg,#ffe8d0,#ffd4b0);transition:var(--transition)}
+  .gal-item:hover{transform:scale(.98)}
+  .gal-item:first-child{grid-column:span 2;grid-row:span 2;font-size:9rem;background:linear-gradient(135deg,#3B1505,#6B2D0A)}
+  .gal-item:first-child{color:rgba(255,200,120,.7)}
+
+  /* ── CONTACT PAGE ── */
+  .contact-hero{background:linear-gradient(135deg,#1A0A00,#3B1505);padding:8rem 8% 5rem;text-align:center}
+  .contact-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);color:var(--white);font-weight:900;margin-bottom:.8rem}
+  .contact-hero p{color:rgba(255,255,255,.7);font-size:1.1rem}
+  .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:3rem;padding:5rem 8%;align-items:start}
+  .contact-info .info-item{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.8rem}
+  .info-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--flame),var(--crimson));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+  .info-text h4{font-weight:700;margin-bottom:.2rem}
+  .info-text p{color:var(--muted);font-size:.9rem;line-height:1.6}
+  .map-placeholder{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:20px;height:280px;display:flex;align-items:center;justify-content:center;margin-top:2rem;position:relative;overflow:hidden;font-size:3rem}
+  .map-placeholder::before{content:'📍 Khey Deye Restaurant\A Dhanmondi, Dhaka 1209, Bangladesh';white-space:pre;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);text-align:center;color:#fff;font-size:.85rem;font-family:'DM Sans',sans-serif;background:rgba(0,0,0,.6);padding:.5rem 1rem;border-radius:8px;font-weight:500;line-height:1.5}
+  .contact-form-box{background:var(--white);border-radius:20px;padding:2.2rem;box-shadow:0 4px 20px var(--shadow)}
+  .contact-form-box h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--flame)}
+  .social-row{display:flex;gap:1rem;margin-top:2rem}
+  .social-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:var(--transition);border:2px solid #eee}
+  .social-icon:hover{transform:translateY(-4px);border-color:var(--flame)}
+  .social-icon.fb{background:#1877F2;color:#fff;border-color:#1877F2}
+  .social-icon.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;border-color:transparent}
+
+  /* ── REVIEWS ── */
+  .reviews{background:linear-gradient(135deg,#1A0A00,#2E1A0E);padding:6rem 8%}
+  .reviews-header{text-align:center;margin-bottom:3rem}
+  .reviews-header .section-label{color:var(--amber)}
+  .reviews-header .section-title{color:var(--white)}
+  .reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+  .review-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:1.8rem;backdrop-filter:blur(8px);transition:var(--transition)}
+  .review-card:hover{background:rgba(255,255,255,.1);transform:translateY(-4px)}
+  .review-stars{color:var(--gold);font-size:1.1rem;margin-bottom:.8rem;letter-spacing:2px}
+  .review-text{color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.7;font-style:italic;margin-bottom:1.2rem}
+  .reviewer{display:flex;align-items:center;gap:8rem;gap:.8rem}
+  .reviewer-avatar{font-size:2rem}
+  .reviewer-name{color:var(--gold);font-weight:700}
+  .reviewer-date{color:rgba(255,255,255,.4);font-size:.8rem}
+
+  /* ── NEWSLETTER ── */
+  .newsletter{background:linear-gradient(135deg,var(--flame),var(--crimson));padding:5rem 8%;text-align:center}
+  .newsletter h2{font-family:'Playfair Display',serif;color:#fff;font-size:2.2rem;font-weight:900;margin-bottom:.6rem}
+  .newsletter p{color:rgba(255,255,255,.85);font-size:1rem;margin-bottom:2rem}
+  .newsletter-form{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;max-width:480px;margin:0 auto}
+  .newsletter-form input{flex:1;min-width:220px;padding:.85rem 1.2rem;border-radius:50px;border:none;font-family:inherit;font-size:.95rem;outline:none}
+  .newsletter-form button{background:var(--dark);color:var(--gold);border-radius:50px;padding:.85rem 1.8rem;font-weight:700;font-size:.95rem;transition:var(--transition)}
+  .newsletter-form button:hover{background:var(--charcoal);transform:scale(1.04)}
+
+  /* ── FOOTER ── */
+  footer{background:var(--dark);color:rgba(255,255,255,.65);padding:4rem 8% 1.5rem}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+  .footer-brand h3{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.5rem;margin-bottom:.8rem}
+  .footer-brand p{font-size:.9rem;line-height:1.7}
+  .footer-col h4{color:var(--white);font-weight:700;margin-bottom:1rem;font-size:.95rem}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+  .footer-col ul li a{font-size:.88rem;transition:color var(--transition)}
+  .footer-col ul li a:hover{color:var(--amber)}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;font-size:.85rem;flex-wrap:wrap;gap:.5rem}
+  .footer-bottom span{color:rgba(255,255,255,.4)}
+
+  /* ── TOAST ── */
+  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:var(--white);padding:.9rem 1.8rem;border-radius:50px;font-weight:600;font-size:.9rem;z-index:9999;transition:transform .4s cubic-bezier(.4,0,.2,1);white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast .toast-emoji{margin-right:.5rem}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;padding:7rem 6% 4rem;text-align:center}
+    .hero p{margin:0 auto 2rem}
+    .hero-btns{justify-content:center}
+    .hero-img{display:none}
+    .about-story,.checkout-grid,.contact-grid{grid-template-columns:1fr}
+    .footer-grid{grid-template-columns:1fr 1fr}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:auto}
+    .gal-item:first-child{grid-column:span 2;height:200px}
+    section{padding:4rem 6%}
+  }
+  @media(max-width:680px){
+    .nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:var(--dark);flex-direction:column;padding:1.5rem;gap:1.2rem;border-bottom:2px solid var(--flame)}
+    .nav-links.mobile-open{display:flex}
+    .hamburger{display:flex}
+    .form-row{grid-template-columns:1fr}
+    .footer-grid{grid-template-columns:1fr}
+    .carousel-track{gap:.8rem}
+    .dish-card{min-width:240px}
+    .hero-img-circle{width:280px;height:280px;font-size:7rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="mainNav">
+  <div class="nav-logo" onclick="goPage('home')">Khey <span>Deye</span></div>
+  <div class="nav-links" id="navLinks">
+    <a onclick="goPage('home')">Home</a>
+    <a onclick="goPage('menu')">Menu</a>
+    <a onclick="goPage('about')">About</a>
+    <a onclick="goPage('contact')">Contact</a>
+    <button class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── CART SIDEBAR ── -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>🛒 Your Order</h2>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">
+      <span class="empty-icon">🍽️</span>
+      <p>Your cart is empty.<br>Add some delicious food!</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">৳0</span></div>
+    <button class="btn-primary" style="width:100%;justify-content:center;display:flex" onclick="goCheckout()">Proceed to Checkout →</button>
+  </div>
+</aside>
+
+<!-- ━━━━━━━━ HOME PAGE ━━━━━━━━ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">🔥 Now Delivering Citywide</span>
+      <h1>Flavors That <em>Speak to You</em></h1>
+      <p>Experience the rich tapestry of authentic Bangladeshi cuisine crafted with generations of love — now at your doorstep.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="goPage('menu')">Order Now →</button>
+        <button class="btn-outline" onclick="goPage('about')">Our Story</button>
+      </div>
+    </div>
+    <div class="hero-img">
+      <div class="hero-img-circle">🍛</div>
+      <div class="hero-stat stat1"><strong>4.9★</strong><span>1,200+ Reviews</span></div>
+      <div class="hero-stat stat2"><strong>30 min</strong><span>Avg. Delivery</span></div>
+    </div>
+  </section>
+
+  <!-- FEATURED DISHES -->
+  <section class="featured">
+    <div class="featured-header">
+      <div class="section-label">Chef's Selection</div>
+      <h2 class="section-title">Our <em>Signature</em> Dishes</h2>
+      <p class="section-sub" style="margin:0 auto">Handpicked favourites, beloved by thousands of satisfied guests every week.</p>
+    </div>
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- cards injected by JS -->
+      </div>
+    </div>
+    <div class="carousel-nav">
+      <button onclick="slideCarousel(-1)">‹</button>
+      <button onclick="slideCarousel(1)">›</button>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews">
+    <div class="reviews-header">
+      <div class="section-label">What People Say</div>
+      <h2 class="section-title" style="color:var(--white)">Guests <em style="color:var(--amber)">Love</em> Us</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"The Kacchi Biryani is absolutely divine! Rich, aromatic, and perfectly spiced. Best I've had in Dhaka — nothing compares."</p>
+        <div class="reviewer"><span class="reviewer-avatar">👩</span><div><div class="reviewer-name">Nadia Rahman</div><div class="reviewer-date">Feb 2025</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Fast delivery, generous portions, and the Beef Rezala had me going back for seconds. Khey Deye never disappoints!"</p>
+        <div class="reviewer"><span class="reviewer-avatar">👨</span><div><div class="reviewer-name">Arif Hossain</div><div class="reviewer-date">Jan 2025</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★☆</div>
+        <p class="review-text">"Loved the atmosphere and the Mishti Doi dessert is phenomenal. A true celebration of Bangladeshi culinary tradition."</p>
+        <div class="reviewer"><span class="reviewer-avatar">👩</span><div><div class="reviewer-name">Tania Akter</div><div class="reviewer-date">Mar 2025</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <h2>Get Exclusive Deals & Updates</h2>
+    <p>Subscribe to receive special offers, new menu items, and festive discounts straight to your inbox.</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Enter your email address..." id="newsEmail">
+      <button onclick="subscribeNewsletter()">Subscribe 🎉</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Khey Deye</h3>
+        <p>Bringing the heart of Bangladeshi cuisine to your table since 2015. Authentic flavors, modern comforts.</p>
+        <div class="social-row" style="margin-top:1.2rem">
+          <a class="social-icon fb" href="#" title="Facebook">f</a>
+          <a class="social-icon ig" href="#" title="Instagram">📷</a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a onclick="goPage('home')">Home</a></li><li><a onclick="goPage('menu')">Menu</a></li><li><a onclick="goPage('about')">About Us</a></li><li><a onclick="goPage('contact')">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Categories</h4><ul><li><a>Appetizers</a></li><li><a>Main Course</a></li><li><a>Desserts</a></li><li><a>Drinks</a></li></ul></div>
+      <div class="footer-col"><h4>Contact</h4><ul><li><a>📍 Dhanmondi, Dhaka</a></li><li><a>📞 +880 1800-KHEY</a></li><li><a>✉️ hello@kheydeye.com</a></li><li><a>🕐 Open: 11am – 11pm</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Khey Deye Restaurant. All rights reserved.</span><span>Made with ❤️ in Dhaka</span></div>
+  </footer>
+</div>
+
+<!-- ━━━━━━━━ MENU PAGE ━━━━━━━━ -->
+<div class="page" id="page-menu">
+  <div class="menu-hero">
+    <h1>Our Full <em style="color:var(--amber)">Menu</em></h1>
+    <p>From street-food classics to festive feasts — crafted with passion every day.</p>
+  </div>
+  <div class="menu-cats" id="menuCats">
+    <button class="cat-btn active" onclick="filterMenu('all',this)">🍽️ All</button>
+    <button class="cat-btn" onclick="filterMenu('appetizer',this)">🥗 Appetizers</button>
+    <button class="cat-btn" onclick="filterMenu('main',this)">🍛 Main Course</button>
+    <button class="cat-btn" onclick="filterMenu('dessert',this)">🍮 Desserts</button>
+    <button class="cat-btn" onclick="filterMenu('drink',this)">🥤 Drinks</button>
+  </div>
+  <div class="menu-grid" id="menuGrid">
+    <!-- injected by JS -->
+  </div>
+</div>
+
+<!-- ━━━━━━━━ CHECKOUT PAGE ━━━━━━━━ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <h1>Checkout</h1>
+    <p class="sub">Almost there! Fill in your details and confirm your order.</p>
+    <div class="checkout-grid">
+      <div>
+        <!-- Delivery Info -->
+        <div class="checkout-form" style="margin-bottom:1.5rem">
+          <h3>📍 Delivery Information</h3>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="Rahim" id="fname"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Hossain" id="lname"></div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+880 1700-000000" id="phone"></div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group"><label>Email</label><input type="email" placeholder="you@example.com" id="email"></div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group"><label>Delivery Address</label><input type="text" placeholder="House 12, Road 5, Dhanmondi..." id="address"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><select id="city"><option>Dhaka</option><option>Chattogram</option><option>Sylhet</option><option>Rajshahi</option></select></div>
+            <div class="form-group"><label>Special Note</label><input type="text" placeholder="Extra spicy, no onion..." id="note"></div>
+          </div>
+        </div>
+        <!-- Payment -->
+        <div class="checkout-form">
+          <h3>💳 Payment Method</h3>
+          <div class="payment-options" id="paymentOpts">
+            <div class="pay-opt selected" onclick="selectPayment(this)"><span class="pay-icon">💵</span>Cash on Delivery</div>
+            <div class="pay-opt" onclick="selectPayment(this)"><span class="pay-icon">📱</span>bKash</div>
+            <div class="pay-opt" onclick="selectPayment(this)"><span class="pay-icon">🏦</span>Nagad</div>
+            <div class="pay-opt" onclick="selectPayment(this)"><span class="pay-icon">💳</span>Card</div>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center;display:flex;margin-top:1rem;font-size:1rem" onclick="placeOrder()">Place Order 🎉</button>
+        </div>
+      </div>
+      <!-- Summary -->
+      <div class="order-summary">
+        <h3>Order Summary</h3>
+        <div id="checkoutSummary"><!-- filled by JS --></div>
+        <div class="summary-total" id="checkoutTotal"><span>Grand Total</span><span>৳0</span></div>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:.6rem">Free delivery on orders above ৳500. A ৳60 delivery charge applies otherwise.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━ ORDER CONFIRMATION PAGE ━━━━━━━━ -->
+<div class="page" id="page-confirm">
+  <div class="confirm-page">
+    <div class="confirm-card">
+      <div class="confirm-icon">🎉</div>
+      <h2>Order Confirmed!</h2>
+      <p>Thank you for your order. We're preparing your food right now!</p>
+      <div class="order-id" id="confirmOrderId">#KD-00000</div>
+      <p style="font-size:.85rem;color:var(--muted)">Estimated delivery: <strong>25–35 minutes</strong></p>
+      <div class="tracking-steps">
+        <div class="step done"><div class="step-dot">✅</div><span class="step-label">Order<br>Placed</span></div>
+        <div class="step"><div class="step-dot">👨‍🍳</div><span class="step-label">Being<br>Prepared</span></div>
+        <div class="step"><div class="step-dot">🛵</div><span class="step-label">On The<br>Way</span></div>
+        <div class="step"><div class="step-dot">🏠</div><span class="step-label">Delivered</span></div>
+      </div>
+      <div id="confirmSummaryBox" style="background:var(--cream);border-radius:12px;padding:1rem;margin:1rem 0;text-align:left;font-size:.88rem;line-height:1.8"></div>
+      <button class="btn-primary" onclick="goPage('home')" style="margin-top:.5rem">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━ ABOUT PAGE ━━━━━━━━ -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <h1>Our <em style="color:var(--amber)">Story</em></h1>
+    <p>A journey of passion, heritage, and unforgettable flavors — from a family kitchen to a city icon.</p>
+  </div>
+  <div class="about-story">
+    <div class="about-img-box">🍲</div>
+    <div class="about-text">
+      <div class="section-label">Since 2015</div>
+      <h2>Born from <em style="color:var(--flame)">Grandmother's Kitchen</em></h2>
+      <p>Khey Deye started as a humble dream: to share the authentic tastes of Bangladesh with everyone. Our founder Karim Uddin grew up watching his grandmother cook elaborate feasts for the family, where every dish told a story of love, patience, and tradition.</p>
+      <p>In 2015, Karim opened the first Khey Deye outlet in Dhanmondi. Within a year, word had spread across Dhaka. Today, we serve over 2,000 happy guests daily and deliver across the city — with the same soul that started in that small kitchen.</p>
+      <p>Our vision is simple: <strong>great food should be accessible to everyone.</strong> Every ingredient is locally sourced, every recipe is authentic, and every meal is made with genuine care.</p>
+    </div>
+  </div>
+
+  <!-- CHEFS -->
+  <div class="chefs">
+    <div class="section-label" style="text-align:center">The Team</div>
+    <h2 class="section-title" style="text-align:center">Meet Our <em>Chefs</em></h2>
+    <div class="chefs-grid">
+      <div class="chef-card">
+        <div class="chef-avatar">👨‍🍳</div>
+        <h3>Karim Uddin</h3>
+        <div class="role">Head Chef & Founder</div>
+        <p>20 years of culinary mastery. Specialises in traditional Mughlai and Bangladeshi cuisine.</p>
+      </div>
+      <div class="chef-card">
+        <div class="chef-avatar">👩‍🍳</div>
+        <h3>Fatema Begum</h3>
+        <div class="role">Pastry & Desserts Chef</div>
+        <p>Trained in Dhaka and Istanbul, Fatema brings a magical touch to every sweet creation.</p>
+      </div>
+      <div class="chef-card">
+        <div class="chef-avatar">🧑‍🍳</div>
+        <h3>Rahim Chowdhury</h3>
+        <div class="role">Grill & BBQ Specialist</div>
+        <p>Master of the tandoor and open flame. His kebabs have won city-wide competitions.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="gallery" style="padding:0 8% 6rem">
+    <div class="section-label">Our Space</div>
+    <h2 class="section-title">Inside <em>Khey Deye</em></h2>
+    <div class="gallery-grid">
+      <div class="gal-item">🏮</div>
+      <div class="gal-item" style="background:linear-gradient(135deg,#ffe8d0,#ffc9a0)">🪴</div>
+      <div class="gal-item" style="background:linear-gradient(135deg,#ffd4b0,#ffbc80)">🕯️</div>
+      <div class="gal-item" style="background:linear-gradient(135deg,#ffe8d0,#ffd4b0)">🍽️</div>
+      <div class="gal-item" style="background:linear-gradient(135deg,#ffc9a0,#ffaa66)">☕</div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━ CONTACT PAGE ━━━━━━━━ -->
+<div class="page" id="page-contact">
+  <div class="contact-hero">
+    <h1>Get In <em style="color:var(--amber)">Touch</em></h1>
+    <p>We'd love to hear from you — reservations, catering, or just saying hi!</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="section-label">Find Us</div>
+      <h2 class="section-title" style="margin-bottom:1.5rem">Visit or <em>Call</em> Us</h2>
+      <div class="info-item"><div class="info-icon">📍</div><div class="info-text"><h4>Address</h4><p>House 45, Road 12, Dhanmondi<br>Dhaka 1209, Bangladesh</p></div></div>
+      <div class="info-item"><div class="info-icon">📞</div><div class="info-text"><h4>Phone</h4><p>+880 1800-KHEYDEYE<br>+880 1700-123456</p></div></div>
+      <div class="info-item"><div class="info-icon">✉️</div><div class="info-text"><h4>Email</h4><p>hello@kheydeye.com<br>catering@kheydeye.com</p></div></div>
+      <div class="info-item"><div class="info-icon">🕐</div><div class="info-text"><h4>Opening Hours</h4><p>Mon–Fri: 11:00 AM – 11:00 PM<br>Sat–Sun: 10:00 AM – 12:00 AM</p></div></div>
+      <div class="map-placeholder">🗺️</div>
+      <div class="social-row">
+        <a class="social-icon fb" href="#" title="Facebook">f</a>
+        <a class="social-icon ig" href="#" title="Instagram">📷</a>
+      </div>
+    </div>
+    <div class="contact-form-box">
+      <h3>Send Us a Message</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Your Name</label><input type="text" placeholder="Rahim Hossain" id="cname"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" id="cemail"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Subject</label><input type="text" placeholder="Reservation / Catering / Feedback..." id="csubject"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Write your message here..." id="cmessage" style="resize:vertical"></textarea></div>
+      </div>
+      <button class="btn-primary" style="width:100%;display:flex;justify-content:center;margin-top:.5rem" onclick="sendContact()">Send Message ✉️</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-emoji">✅</span><span id="toastMsg">Added to cart!</span></div>
+
+<script>
+// ━━━━━━━━ DATA ━━━━━━━━
+const menuData = [
+  {id:1,cat:'appetizer',name:'Chicken Tikka',emoji:'🍗',price:280,desc:'Tender chicken marinated in spiced yogurt, char-grilled to perfection.',badge:'Popular'},
+  {id:2,cat:'appetizer',name:'Vegetable Samosa',emoji:'🥟',price:120,desc:'Crispy golden pastry filled with spiced potatoes and peas.',badge:'Veg'},
+  {id:3,cat:'appetizer',name:'Soup e Desi',emoji:'🍲',price:160,desc:'Rich bone broth with aromatic spices, ginger, and fresh herbs.',badge:null},
+  {id:4,cat:'main',name:'Kacchi Biryani',emoji:'🍛',price:450,desc:'Slow-cooked aromatic rice layered with tender mutton, saffron & fried onion.',badge:'Bestseller'},
+  {id:5,cat:'main',name:'Beef Rezala',emoji:'🥩',price:380,desc:'Melt-in-mouth beef in a creamy white gravy with cardamom and cream.',badge:'Chef Pick'},
+  {id:6,cat:'main',name:'Prawn Malaikari',emoji:'🦐',price:520,desc:'Juicy tiger prawns cooked in rich coconut milk and mustard.',badge:'Seafood'},
+  {id:7,cat:'main',name:'Dal Bhat Set',emoji:'🌾',price:200,desc:'Comforting lentil curry with steamed rice, fried hilsa and mixed pickle.',badge:'Value'},
+  {id:8,cat:'main',name:'Chicken Roast',emoji:'🍖',price:350,desc:'Half roasted chicken with caramelised onion gravy and paratha.',badge:null},
+  {id:9,cat:'dessert',name:'Mishti Doi',emoji:'🍮',price:90,desc:'Classic sweet yogurt, slow-set in clay pots with date-palm jaggery.',badge:'Traditional'},
+  {id:10,cat:'dessert',name:'Roshogolla',emoji:'🫙',price:110,desc:'Spongy cottage-cheese dumplings soaked in light sugar syrup.',badge:'Sweet'},
+  {id:11,cat:'dessert',name:'Firni',emoji:'🥣',price:130,desc:'Creamy rice-flour pudding with cardamom, rose water and pistachio.',badge:null},
+  {id:12,cat:'drink',name:'Borhani',emoji:'🥤',price:80,desc:'Tangy yogurt-based spiced drink — perfect with biryani.',badge:'Classic'},
+  {id:13,cat:'drink',name:'Mango Lassi',emoji:'🥭',price:120,desc:'Thick and creamy blended mango yogurt with a touch of cardamom.',badge:'Seasonal'},
+  {id:14,cat:'drink',name:'Masala Chai',emoji:'☕',price:60,desc:'Freshly brewed tea with aromatic spices, ginger and full-cream milk.',badge:null},
+];
+
+let cart = {};
+let carouselIndex = 0;
+let selectedPayment = 'Cash on Delivery';
+
+// ━━━━━━━━ PAGES ━━━━━━━━
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='menu') renderMenuGrid();
+  if(id==='checkout') renderCheckoutSummary();
+  // Close mobile menu
+  document.getElementById('navLinks').classList.remove('mobile-open');
+}
+
+function toggleMobileMenu(){
+  document.getElementById('navLinks').classList.toggle('mobile-open');
+}
+
+// ━━━━━━━━ CAROUSEL ━━━━━━━━
+function renderCarousel(){
+  const featured = menuData.filter(d=>d.badge);
+  const track = document.getElementById('carouselTrack');
+  track.innerHTML = featured.map(d=>`
+    <div class="dish-card">
+      <div class="dish-img">
+        ${d.badge?`<span class="dish-badge">${d.badge}</span>`:''}
+        <span style="font-size:5.5rem">${d.emoji}</span>
+      </div>
+      <div class="dish-info">
+        <h3>${d.name}</h3>
+        <p>${d.desc}</p>
+        <div class="dish-footer">
+          <span class="dish-price">৳${d.price}</span>
+          <button class="add-btn" onclick="addToCart(${d.id})">+ Add</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function slideCarousel(dir){
+  const track = document.getElementById('carouselTrack');
+  const cards = track.querySelectorAll('.dish-card');
+  const cardW = cards[0]?.offsetWidth + 24 || 304;
+  const max = cards.length - 3;
+  carouselIndex = Math.max(0, Math.min(carouselIndex + dir, max));
+  track.style.transform = `translateX(-${carouselIndex * cardW}px)`;
+}
+
+// ━━━━━━━━ MENU GRID ━━━━━━━━
+function renderMenuGrid(){
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = menuData.map(d=>`
+    <div class="menu-item" data-cat="${d.cat}" id="menu-item-${d.id}">
+      <div class="dish-img" style="height:180px">
+        ${d.badge?`<span class="dish-badge">${d.badge}</span>`:''}
+        <span style="font-size:5.5rem">${d.emoji}</span>
+      </div>
+      <div class="dish-info">
+        <h3>${d.name}</h3>
+        <p>${d.desc}</p>
+        <div class="dish-footer">
+          <span class="dish-price">৳${d.price}</span>
+          <button class="add-btn" onclick="addToCart(${d.id})">+ Add</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterMenu(cat, btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(el=>{
+    el.classList.toggle('hidden', cat!=='all' && el.dataset.cat!==cat);
+  });
+}
+
+// ━━━━━━━━ CART ━━━━━━━━
+function addToCart(id){
+  const item = menuData.find(d=>d.id===id);
+  if(!item) return;
+  cart[id] = (cart[id]||0) + 1;
+  updateCartUI();
+  showToast(`${item.emoji} ${item.name} added!`);
+}
+
+function removeFromCart(id){
+  delete cart[id];
+  updateCartUI();
+}
+
+function changeQty(id, delta){
+  const newQty = (cart[id]||0) + delta;
+  if(newQty <= 0) removeFromCart(id);
+  else { cart[id] = newQty; updateCartUI(); }
+}
+
+function updateCartUI(){
+  const ids = Object.keys(cart).map(Number);
+  const totalItems = ids.reduce((s,id)=>s+cart[id],0);
+  document.querySelectorAll('.cart-count').forEach(el=>el.textContent=totalItems);
+
+  const body = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+
+  if(ids.length===0){
+    body.innerHTML=`<div class="cart-empty"><span class="empty-icon">🍽️</span><p>Your cart is empty.<br>Add some delicious food!</p></div>`;
+    footer.style.display='none';
+    return;
+  }
+
+  let total = 0;
+  body.innerHTML = ids.map(id=>{
+    const item = menuData.find(d=>d.id===id);
+    const sub = item.price * cart[id];
+    total += sub;
+    return `
+      <div class="cart-item">
+        <span class="cart-item-emoji">${item.emoji}</span>
+        <div class="cart-item-info">
+          <h4>${item.name}</h4>
+          <span>৳${sub}</span>
+          <div class="qty-ctrl">
+            <button onclick="changeQty(${id},-1)">−</button>
+            <span>${cart[id]}</span>
+            <button onclick="changeQty(${id},1)">+</button>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeFromCart(${id})">🗑</button>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('cartTotal').textContent = `৳${total}`;
+  footer.style.display='block';
+}
+
+function toggleCart(){
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('open');
+}
+
+// ━━━━━━━━ CHECKOUT ━━━━━━━━
+function renderCheckoutSummary(){
+  const ids = Object.keys(cart).map(Number);
+  let total = 0;
+  const box = document.getElementById('checkoutSummary');
+  box.innerHTML = ids.map(id=>{
+    const item = menuData.find(d=>d.id===id);
+    const sub = item.price * cart[id];
+    total += sub;
+    return `<div class="summary-item"><span>${item.emoji} ${item.name} ×${cart[id]}</span><span>৳${sub}</span></div>`;
+  }).join('');
+  const delivery = total >= 500 ? 0 : 60;
+  box.innerHTML += `<div class="summary-item" style="color:var(--muted)"><span>Delivery</span><span>${delivery===0?'<span style="color:green">Free</span>':'৳'+delivery}</span></div>`;
+  document.getElementById('checkoutTotal').innerHTML = `<span>Grand Total</span><span>৳${total+delivery}</span>`;
+}
+
+function selectPayment(el){
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPayment = el.textContent.trim();
+}
+
+function goCheckout(){
+  toggleCart();
+  goPage('checkout');
+}
+
+function placeOrder(){
+  const fname = document.getElementById('fname').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  if(!fname || !phone || !address){
+    showToast('⚠️ Please fill in all required fields!');
+    return;
+  }
+  // Build order ID
+  const oid = '#KD-' + Math.floor(10000 + Math.random()*90000);
+  document.getElementById('confirmOrderId').textContent = oid;
+
+  // Summary for confirm page
+  const ids = Object.keys(cart).map(Number);
+  let total = 0;
+  let lines = ids.map(id=>{
+    const item = menuData.find(d=>d.id===id);
+    const sub = item.price * cart[id];
+    total += sub;
+    return `${item.emoji} ${item.name} ×${cart[id]} — ৳${sub}`;
+  }).join('<br>');
+  const delivery = total >= 500 ? 0 : 60;
+  document.getElementById('confirmSummaryBox').innerHTML =
+    `<strong>📋 Order: ${oid}</strong><br>${lines}<br><strong>Delivery: ৳${delivery}</strong><br><strong>💰 Total: ৳${total+delivery}</strong><br>📍 ${address}<br>💳 ${selectedPayment}`;
+
+  // Clear cart
+  cart = {};
+  updateCartUI();
+  goPage('confirm');
+}
+
+// ━━━━━━━━ CONTACT ━━━━━━━━
+function sendContact(){
+  const n = document.getElementById('cname').value.trim();
+  const e = document.getElementById('cemail').value.trim();
+  const m = document.getElementById('cmessage').value.trim();
+  if(!n||!e||!m){showToast('⚠️ Please fill all fields!');return;}
+  showToast('✉️ Message sent! We\'ll reply soon.');
+  ['cname','cemail','csubject','cmessage'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ━━━━━━━━ NEWSLETTER ━━━━━━━━
+function subscribeNewsletter(){
+  const v = document.getElementById('newsEmail').value.trim();
+  if(!v||!v.includes('@')){showToast('⚠️ Enter a valid email!');return;}
+  showToast('🎉 Subscribed successfully!');
+  document.getElementById('newsEmail').value='';
+}
+
+// ━━━━━━━━ TOAST ━━━━━━━━
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ━━━━━━━━ INIT ━━━━━━━━
+renderCarousel();
+renderMenuGrid();
+</script>
+</body>
+</html>
