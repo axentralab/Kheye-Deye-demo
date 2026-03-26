@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRAMECUT — Video Editing Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --black: #080808;
+  --white: #f5f0eb;
+  --cream: #e8e0d4;
+  --orange: #ff4d00;
+  --orange-dim: #c23a00;
+  --gray: #1a1a1a;
+  --gray-mid: #2e2e2e;
+  --gray-light: #888;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ===== NOISE OVERLAY ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--orange); }
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 4rem;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,77,0,0.15);
+  transition: padding 0.3s;
+}
+nav.scrolled { padding: 0.8rem 4rem; }
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+.nav-logo span { color: var(--orange); }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--orange); }
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--orange);
+  color: var(--black);
+  padding: 0.65rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.15s;
+}
+.nav-cta:hover { background: var(--orange-dim); transform: translateY(-1px); }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: 0.3s; }
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+  transition: color 0.2s;
+}
+.mobile-menu a:hover { color: var(--orange); }
+.close-menu { position: absolute; top: 2rem; right: 2.5rem; font-size: 2rem; cursor: pointer; color: var(--gray-light); }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 4rem 5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(255,77,0,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,77,0,0.07) 0%, transparent 60%);
+}
+.hero-reel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  opacity: 0.08;
+}
+.reel-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: reelScroll 8s linear infinite;
+}
+.reel-col:nth-child(even) { animation-direction: reverse; }
+.reel-item {
+  flex-shrink: 0;
+  background: var(--gray-mid);
+  aspect-ratio: 16/9;
+}
+@keyframes reelScroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.hero-tag::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--orange);
+}
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 12vw, 11rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+}
+.hero-headline em { color: var(--orange); font-style: normal; }
+.hero-sub {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 2.5rem;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+.hero-desc {
+  max-width: 380px;
+  color: var(--gray-light);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.hero-actions { display: flex; align-items: center; gap: 1.5rem; }
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--orange);
+  color: var(--black);
+  padding: 1rem 2.5rem;
+  border: 2px solid var(--orange);
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { background: transparent; color: var(--orange); }
+.btn-outline {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--white);
+  padding: 1rem 2rem;
+  border: 2px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  z-index: 1;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--orange);
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-top: 0.3rem;
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.section-label::before { content: ''; width: 30px; height: 1px; background: var(--orange); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+/* ===== MARQUEE ===== */
+.marquee-wrap {
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 1rem 0;
+  background: var(--gray);
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  animation: marqueeRun 18s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  padding: 0 2.5rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+.marquee-item::after { content: '◆'; color: var(--orange); font-size: 0.5rem; }
+@keyframes marqueeRun {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ===== SERVICES ===== */
+.services { padding: 8rem 4rem; }
+.services-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 5rem;
+  gap: 2rem;
+}
+.services-desc {
+  max-width: 340px;
+  color: var(--gray-light);
+  font-weight: 300;
+  line-height: 1.7;
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+}
+.service-card {
+  background: var(--black);
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+  cursor: default;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25,1,0.5,1);
+}
+.service-card:hover::before { transform: scaleX(1); }
+.service-card:hover { background: var(--gray); }
+.service-num {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--orange);
+  margin-bottom: 2rem;
+}
+.service-icon {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.service-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+.service-text {
+  color: var(--gray-light);
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+.service-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 0.3rem 0.8rem;
+  color: var(--gray-light);
+  transition: border-color 0.2s, color 0.2s;
+}
+.service-card:hover .tag { border-color: rgba(255,77,0,0.3); color: var(--white); }
+
+/* ===== PORTFOLIO ===== */
+.portfolio { padding: 8rem 4rem; background: var(--gray); }
+.portfolio-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 4rem;
+  gap: 2rem;
+}
+.portfolio-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--gray-light);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--orange);
+  color: var(--black);
+  border-color: var(--orange);
+}
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 1.5rem;
+}
+.portfolio-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--gray-mid);
+}
+.portfolio-item:nth-child(1) { grid-column: span 2; }
+.portfolio-item:nth-child(4) { grid-column: span 2; }
+.portfolio-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--gray-mid);
+  position: relative;
+  overflow: hidden;
+}
+.portfolio-item:nth-child(1) .portfolio-thumb,
+.portfolio-item:nth-child(4) .portfolio-thumb {
+  aspect-ratio: 21/9;
+}
+.thumb-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.25,1,0.5,1);
+}
+.portfolio-item:hover .thumb-inner { transform: scale(1.05); }
+.thumb-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--c1, #1a1a2e) 0%, var(--c2, #16213e) 50%, var(--c3, #0f3460) 100%);
+}
+.thumb-play {
+  position: absolute;
+  width: 56px; height: 56px;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all 0.3s;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(4px);
+}
+.portfolio-item:hover .thumb-play {
+  background: var(--orange);
+  border-color: var(--orange);
+  transform: scale(1.1);
+}
+.thumb-play svg { margin-left: 4px; }
+.portfolio-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 60%);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.portfolio-item:hover .portfolio-overlay { opacity: 1; }
+.portfolio-cat {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 0.4rem;
+}
+.portfolio-title-card {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+}
+.portfolio-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.portfolio-meta-title { font-size: 0.85rem; font-weight: 500; }
+.portfolio-meta-tag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+}
+.view-all-wrap { text-align: center; margin-top: 3.5rem; }
+
+/* ===== PROCESS ===== */
+.process { padding: 8rem 4rem; }
+.process-header { margin-bottom: 5rem; }
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  counter-reset: step;
+}
+.step {
+  background: var(--black);
+  padding: 3rem 2.5rem;
+  position: relative;
+  counter-increment: step;
+}
+.step-num {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 1;
+  color: rgba(255,77,0,0.12);
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  transition: color 0.3s;
+}
+.step:hover .step-num { color: rgba(255,77,0,0.25); }
+.step-icon { font-size: 1.8rem; margin-bottom: 1.5rem; }
+.step-title { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.04em; margin-bottom: 0.8rem; }
+.step-text { color: var(--gray-light); font-size: 0.88rem; font-weight: 300; line-height: 1.7; }
+
+/* ===== PRICING ===== */
+.pricing { padding: 8rem 4rem; background: var(--gray); }
+.pricing-header { text-align: center; margin-bottom: 4rem; }
+.pricing-header .section-label { justify-content: center; }
+.pricing-header .section-label::before { display: none; }
+.pricing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.toggle-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+}
+.toggle-switch {
+  width: 52px; height: 26px;
+  background: var(--gray-mid);
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.toggle-switch.on { background: var(--orange); }
+.toggle-knob {
+  width: 20px; height: 20px;
+  background: var(--white);
+  border-radius: 50%;
+  position: absolute;
+  top: 3px; left: 3px;
+  transition: transform 0.3s;
+}
+.toggle-switch.on .toggle-knob { transform: translateX(26px); }
+.save-badge {
+  background: var(--orange);
+  color: var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  font-weight: 700;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+}
+.pricing-card {
+  background: var(--black);
+  padding: 3rem;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.pricing-card.featured {
+  border-color: var(--orange);
+  transform: scale(1.03);
+  background: #0e0e0e;
+}
+.featured-badge {
+  position: absolute;
+  top: -1px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--orange);
+  color: var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.35rem 1.2rem;
+  font-weight: 700;
+}
+.plan-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+.plan-desc {
+  color: var(--gray-light);
+  font-size: 0.85rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+.plan-price {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+.plan-currency {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  color: var(--orange);
+}
+.plan-amount {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.plan-period {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  align-self: flex-end;
+  margin-bottom: 0.5rem;
+}
+.plan-per-video {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--orange);
+  margin-bottom: 2rem;
+}
+.divider { height: 1px; background: rgba(255,255,255,0.07); margin: 2rem 0; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2.5rem; }
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: 0.88rem;
+  color: var(--gray-light);
+  font-weight: 300;
+}
+.plan-features li::before {
+  content: '✓';
+  color: var(--orange);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+.plan-features li.disabled { opacity: 0.3; }
+.plan-features li.disabled::before { content: '✕'; color: var(--gray-light); }
+.plan-btn {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1rem;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: var(--white);
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.plan-btn:hover { border-color: var(--orange); color: var(--orange); }
+.pricing-card.featured .plan-btn {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--black);
+}
+.pricing-card.featured .plan-btn:hover {
+  background: transparent;
+  color: var(--orange);
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials { padding: 8rem 4rem; overflow: hidden; }
+.testimonials-header { margin-bottom: 4rem; }
+.testimonials-track-wrap { overflow: hidden; }
+.testimonials-track {
+  display: flex;
+  gap: 1.5rem;
+  animation: testimonialScroll 25s linear infinite;
+  width: max-content;
+}
+.testimonials-track:hover { animation-play-state: paused; }
+@keyframes testimonialScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.testimonial-card {
+  width: 360px;
+  flex-shrink: 0;
+  background: var(--gray);
+  padding: 2.5rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.testimonial-card::before {
+  content: '"';
+  font-family: var(--font-display);
+  font-size: 6rem;
+  line-height: 1;
+  color: rgba(255,77,0,0.15);
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+}
+.testimonial-text {
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--cream);
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+.testimonial-author { display: flex; align-items: center; gap: 1rem; }
+.author-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--gray-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--orange);
+  flex-shrink: 0;
+}
+.author-name { font-size: 0.88rem; font-weight: 500; }
+.author-role {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+}
+.testimonial-stars { color: var(--orange); font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 1rem; }
+
+/* ===== CTA ===== */
+.cta-section {
+  padding: 10rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255,77,0,0.1) 0%, transparent 70%);
+}
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 8vw, 8rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.cta-title em { color: var(--orange); font-style: normal; display: block; }
+.cta-sub {
+  color: var(--gray-light);
+  font-size: 1rem;
+  font-weight: 300;
+  max-width: 420px;
+  margin: 0 auto 3rem;
+  position: relative;
+}
+.cta-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; position: relative; }
+.cta-note {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-top: 1.5rem;
+  position: relative;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 3rem;
+  background: #050505;
+}
+.footer-brand .nav-logo { font-size: 2rem; margin-bottom: 1rem; }
+.footer-brand p { color: var(--gray-light); font-size: 0.85rem; font-weight: 300; line-height: 1.7; }
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 1.5rem;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-links a {
+  color: var(--gray-light);
+  font-size: 0.88rem;
+  font-weight: 300;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-socials { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+.social-btn {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-light);
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.social-btn:hover { border-color: var(--orange); color: var(--orange); }
+.footer-bottom {
+  padding: 2rem 4rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #050505;
+}
+.footer-bottom p {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--gray-light);
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.25,1,0.5,1), transform 0.7s cubic-bezier(0.25,1,0.5,1);
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up-delay-1 { transition-delay: 0.1s; }
+.fade-up-delay-2 { transition-delay: 0.2s; }
+.fade-up-delay-3 { transition-delay: 0.3s; }
+.fade-up-delay-4 { transition-delay: 0.4s; }
+
+/* ===== CURSOR ===== */
+.custom-cursor {
+  width: 10px; height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.15s, opacity 0.15s;
+  transform: translate(-50%, -50%);
+}
+.custom-cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,77,0,0.5);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9997;
+  transition: transform 0.4s cubic-bezier(0.25,1,0.5,1), width 0.3s, height 0.3s, opacity 0.15s;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+  nav { padding: 1.2rem 2.5rem; }
+  .hero { padding: 0 2.5rem 4rem; }
+  .services, .portfolio, .process, .pricing, .testimonials, .cta-section { padding: 6rem 2.5rem; }
+  footer { padding: 3rem 2.5rem; }
+  .footer-bottom { padding: 1.5rem 2.5rem; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .process-steps { grid-template-columns: repeat(2, 1fr); }
+  footer { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .hero-sub { flex-direction: column; align-items: flex-start; }
+  .hero-stats { gap: 2rem; }
+  .portfolio-grid { grid-template-columns: 1fr 1fr; }
+  .portfolio-item:nth-child(1),
+  .portfolio-item:nth-child(4) { grid-column: span 2; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card.featured { transform: scale(1); }
+}
+@media (max-width: 640px) {
+  nav { padding: 1rem 1.5rem; }
+  .hero { padding: 0 1.5rem 3rem; }
+  .services, .portfolio, .process, .pricing, .testimonials, .cta-section { padding: 5rem 1.5rem; }
+  footer { padding: 3rem 1.5rem; grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { padding: 1.5rem; flex-direction: column; gap: 0.8rem; text-align: center; }
+  .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+  .services-grid { grid-template-columns: 1fr; }
+  .process-steps { grid-template-columns: 1fr; }
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .portfolio-item:nth-child(1),
+  .portfolio-item:nth-child(4) { grid-column: span 1; }
+  .cta-actions { flex-direction: column; }
+  .custom-cursor, .custom-cursor-ring { display: none; }
+  .services-header, .portfolio-header { flex-direction: column; align-items: flex-start; }
+  footer { gap: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="custom-cursor" id="cursor"></div>
+<div class="custom-cursor-ring" id="cursorRing"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <span class="close-menu" id="closeMenu">✕</span>
+  <a href="#services" onclick="closeMobileMenu()">Services</a>
+  <a href="#portfolio" onclick="closeMobileMenu()">Portfolio</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+  <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">FRAME<span>CUT</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="scrollTo('#pricing')">Get Started</button>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-reel">
+    <div class="reel-col">
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d1b1b,#3d2020)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b2d1b,#203d20)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d2d1b,#3d3d20)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d1b1b,#3d2020)"></div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d1b2e,#3d2040)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b2d2d,#203d3d)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d2d2d,#3d3d3d)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a2e1a,#16401e)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d1b2e,#3d2040)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b2d2d,#203d3d)"></div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#3d2020,#2d1b1b)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b1b2d,#20203d)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d1b2e,#3d2040)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#3d2020,#2d1b1b)"></div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item" style="background:linear-gradient(135deg,#2e2e1a,#401e16)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b2d1b,#203d20)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2d2d1b,#3d3d20)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1a2e2e,#163840)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#2e2e1a,#401e16)"></div>
+      <div class="reel-item" style="background:linear-gradient(135deg,#1b2d1b,#203d20)"></div>
+    </div>
+  </div>
+
+  <div class="hero-tag">Premium Video Editing Agency</div>
+  <h1 class="hero-headline">
+    WE MAKE<br>
+    YOUR<br>
+    <em>VISION</em><br>
+    MOVE.
+  </h1>
+
+  <div class="hero-sub">
+    <p class="hero-desc">
+      From raw footage to cinematic masterpieces — we craft videos that stop the scroll, build brands, and drive real results.
+    </p>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn-primary">View Our Work</a>
+      <a href="#pricing" class="btn-outline">See Pricing</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Videos Delivered</div>
+    </div>
+    <div>
+      <div class="stat-num">98%</div>
+      <div class="stat-label">Client Satisfaction</div>
+    </div>
+    <div>
+      <div class="stat-num">48H</div>
+      <div class="stat-label">Avg Turnaround</div>
+    </div>
+    <div>
+      <div class="stat-num">7+</div>
+      <div class="stat-label">Years of Craft</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Short Form Content</div>
+    <div class="marquee-item">Brand Films</div>
+    <div class="marquee-item">YouTube Editing</div>
+    <div class="marquee-item">Motion Graphics</div>
+    <div class="marquee-item">Color Grading</div>
+    <div class="marquee-item">Reels & TikTok</div>
+    <div class="marquee-item">Corporate Videos</div>
+    <div class="marquee-item">Documentary</div>
+    <div class="marquee-item">Short Form Content</div>
+    <div class="marquee-item">Brand Films</div>
+    <div class="marquee-item">YouTube Editing</div>
+    <div class="marquee-item">Motion Graphics</div>
+    <div class="marquee-item">Color Grading</div>
+    <div class="marquee-item">Reels & TikTok</div>
+    <div class="marquee-item">Corporate Videos</div>
+    <div class="marquee-item">Documentary</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header fade-up">
+    <div>
+      <div class="section-label">What We Do</div>
+      <h2 class="section-title">OUR<br>SERVICES</h2>
+    </div>
+    <p class="services-desc">We don't just edit videos — we engineer moments that land. Every frame, every cut, every transition has intent.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card fade-up">
+      <div class="service-num">01</div>
+      <span class="service-icon">✂️</span>
+      <div class="service-name">Video Editing</div>
+      <p class="service-text">Professional post-production with seamless cuts, rhythm-perfect pacing, and storytelling that keeps viewers hooked from first frame to last.</p>
+      <div class="service-tags">
+        <span class="tag">Premiere Pro</span>
+        <span class="tag">DaVinci</span>
+        <span class="tag">Final Cut</span>
+      </div>
+    </div>
+    <div class="service-card fade-up fade-up-delay-1">
+      <div class="service-num">02</div>
+      <span class="service-icon">🎨</span>
+      <div class="service-name">Motion Graphics</div>
+      <p class="service-text">Eye-catching animated graphics, lower thirds, intros, and title sequences that elevate your brand's visual identity.</p>
+      <div class="service-tags">
+        <span class="tag">After Effects</span>
+        <span class="tag">Lottie</span>
+        <span class="tag">3D Motion</span>
+      </div>
+    </div>
+    <div class="service-card fade-up fade-up-delay-2">
+      <div class="service-num">03</div>
+      <span class="service-icon">🎬</span>
+      <div class="service-name">Color Grading</div>
+      <p class="service-text">Cinematic color science that gives your footage a distinct look — from warm golden hour tones to gritty desaturated drama.</p>
+      <div class="service-tags">
+        <span class="tag">DaVinci Resolve</span>
+        <span class="tag">LUTs</span>
+        <span class="tag">HDR</span>
+      </div>
+    </div>
+    <div class="service-card fade-up">
+      <div class="service-num">04</div>
+      <span class="service-icon">📱</span>
+      <div class="service-name">Short Form Content</div>
+      <p class="service-text">High-retention Reels, TikToks, and Shorts engineered to hook in the first 3 seconds and drive massive organic reach.</p>
+      <div class="service-tags">
+        <span class="tag">Reels</span>
+        <span class="tag">TikTok</span>
+        <span class="tag">Shorts</span>
+      </div>
+    </div>
+    <div class="service-card fade-up fade-up-delay-1">
+      <div class="service-num">05</div>
+      <span class="service-icon">🏢</span>
+      <div class="service-name">Corporate & Ad Videos</div>
+      <p class="service-text">Professional brand films, product launches, and commercials that communicate authority, trust, and drive conversions.</p>
+      <div class="service-tags">
+        <span class="tag">Commercials</span>
+        <span class="tag">Brand Film</span>
+        <span class="tag">Product</span>
+      </div>
+    </div>
+    <div class="service-card fade-up fade-up-delay-2">
+      <div class="service-num">06</div>
+      <span class="service-icon">🎵</span>
+      <div class="service-name">Sound Design</div>
+      <p class="service-text">Audio mixing, music licensing, SFX layering, and noise reduction that makes your video feel as good as it looks.</p>
+      <div class="service-tags">
+        <span class="tag">Mixing</span>
+        <span class="tag">SFX</span>
+        <span class="tag">Music Sync</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="portfolio" id="portfolio">
+  <div class="portfolio-header fade-up">
+    <div>
+      <div class="section-label">Our Work</div>
+      <h2 class="section-title">PORTFOLIO</h2>
+    </div>
+    <div class="portfolio-filter">
+      <button class="filter-btn active" onclick="filterPortfolio('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPortfolio('brand', this)">Brand</button>
+      <button class="filter-btn" onclick="filterPortfolio('social', this)">Social</button>
+      <button class="filter-btn" onclick="filterPortfolio('motion', this)">Motion</button>
+    </div>
+  </div>
+
+  <div class="portfolio-grid" id="portfolioGrid">
+    <div class="portfolio-item" data-cat="brand">
+      <div class="portfolio-thumb">
+        <div class="thumb-inner">
+          <div class="thumb-gradient" style="--c1:#1a0a00;--c2:#3d1a00;--c3:#ff4d00"></div>
+          <div class="thumb-play">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="white"><polygon points="0,0 16,9 0,18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-cat">Brand Film</div>
+        <div class="portfolio-title-card">LUXE BRAND REVEAL</div>
+      </div>
+      <div class="portfolio-meta">
+        <span class="portfolio-meta-title">Luxe Co. Brand Film</span>
+        <span class="portfolio-meta-tag">2:30 min</span>
+      </div>
+    </div>
+
+    <div class="portfolio-item" data-cat="social">
+      <div class="portfolio-thumb">
+        <div class="thumb-inner">
+          <div class="thumb-gradient" style="--c1:#001a3d;--c2:#003d8c;--c3:#0064ff"></div>
+          <div class="thumb-play">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="white"><polygon points="0,0 16,9 0,18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-cat">Social Content</div>
+        <div class="portfolio-title-card">VIRAL REEL SERIES</div>
+      </div>
+      <div class="portfolio-meta">
+        <span class="portfolio-meta-title">Tech Startup Reels</span>
+        <span class="portfolio-meta-tag">0:30 min</span>
+      </div>
+    </div>
+
+    <div class="portfolio-item" data-cat="motion">
+      <div class="portfolio-thumb">
+        <div class="thumb-inner">
+          <div class="thumb-gradient" style="--c1:#1a001a;--c2:#3d003d;--c3:#9900ff"></div>
+          <div class="thumb-play">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="white"><polygon points="0,0 16,9 0,18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-cat">Motion Graphics</div>
+        <div class="portfolio-title-card">3D LOGO ANIMATION</div>
+      </div>
+      <div class="portfolio-meta">
+        <span class="portfolio-meta-title">Brand Identity Motion</span>
+        <span class="portfolio-meta-tag">0:15 min</span>
+      </div>
+    </div>
+
+    <div class="portfolio-item" data-cat="brand">
+      <div class="portfolio-thumb">
+        <div class="thumb-inner">
+          <div class="thumb-gradient" style="--c1:#001a0d;--c2:#003d1f;--c3:#00c853"></div>
+          <div class="thumb-play">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="white"><polygon points="0,0 16,9 0,18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-cat">Commercial</div>
+        <div class="portfolio-title-card">PRODUCT LAUNCH AD</div>
+      </div>
+      <div class="portfolio-meta">
+        <span class="portfolio-meta-title">EcoGear Product Launch</span>
+        <span class="portfolio-meta-tag">1:00 min</span>
+      </div>
+    </div>
+
+    <div class="portfolio-item" data-cat="social">
+      <div class="portfolio-thumb">
+        <div class="thumb-inner">
+          <div class="thumb-gradient" style="--c1:#1a1000;--c2:#3d2500;--c3:#ff9900"></div>
+          <div class="thumb-play">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="white"><polygon points="0,0 16,9 0,18"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-cat">YouTube</div>
+        <div class="portfolio-title-card">DOCUMENTARY EDIT</div>
+      </div>
+      <div class="portfolio-meta">
+        <span class="portfolio-meta-title">Creator YouTube Series</span>
+        <span class="portfolio-meta-tag">12:40 min</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="view-all-wrap fade-up">
+    <a href="#contact" class="btn-outline">View Full Portfolio →</a>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="process-header fade-up">
+    <div class="section-label">How We Work</div>
+    <h2 class="section-title">THE<br>PROCESS</h2>
+  </div>
+  <div class="process-steps">
+    <div class="step fade-up">
+      <div class="step-num">01</div>
+      <div class="step-icon">📋</div>
+      <div class="step-title">Brief & Vision</div>
+      <p class="step-text">We start with a deep discovery call to understand your brand, audience, goals, and the feeling you want to create.</p>
+    </div>
+    <div class="step fade-up fade-up-delay-1">
+      <div class="step-num">02</div>
+      <div class="step-icon">✏️</div>
+      <div class="step-title">Strategy & Story</div>
+      <p class="step-text">Our editors craft a narrative structure and style reference before touching a single frame of your footage.</p>
+    </div>
+    <div class="step fade-up fade-up-delay-2">
+      <div class="step-num">03</div>
+      <div class="step-icon">🎬</div>
+      <div class="step-title">Edit & Refine</div>
+      <p class="step-text">We produce your first cut and iterate based on your feedback — unlimited revisions until it's exactly right.</p>
+    </div>
+    <div class="step fade-up fade-up-delay-3">
+      <div class="step-num">04</div>
+      <div class="step-icon">🚀</div>
+      <div class="step-title">Deliver & Launch</div>
+      <p class="step-text">Final export in all required formats, optimized for every platform — ready to publish and perform.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-header fade-up">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">SIMPLE,<br>TRANSPARENT PRICING</h2>
+    <div class="pricing-toggle">
+      <span class="toggle-label">Monthly</span>
+      <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="toggle-label">Annual</span>
+      <span class="save-badge">Save 20%</span>
+    </div>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- STARTER -->
+    <div class="pricing-card fade-up">
+      <div class="plan-name">STARTER</div>
+      <div class="plan-desc">Perfect for creators & small brands getting started.</div>
+      <div class="plan-price">
+        <span class="plan-currency">$</span>
+        <span class="plan-amount" id="price1">299</span>
+        <span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-per-video" id="perVideo1">~$150 per video</div>
+      <div class="divider"></div>
+      <ul class="plan-features">
+        <li>2 Videos per month</li>
+        <li>Up to 5 min each</li>
+        <li>Basic color grading</li>
+        <li>Licensed music included</li>
+        <li>2 revision rounds</li>
+        <li>5-day turnaround</li>
+        <li class="disabled">Motion graphics</li>
+        <li class="disabled">Priority support</li>
+      </ul>
+      <button class="plan-btn">Get Started →</button>
+    </div>
+
+    <!-- PRO (FEATURED) -->
+    <div class="pricing-card featured fade-up fade-up-delay-1">
+      <div class="featured-badge">Most Popular</div>
+      <div class="plan-name">PRO</div>
+      <div class="plan-desc">For growing brands that need consistent, premium content.</div>
+      <div class="plan-price">
+        <span class="plan-currency">$</span>
+        <span class="plan-amount" id="price2">699</span>
+        <span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-per-video" id="perVideo2">~$116 per video</div>
+      <div class="divider"></div>
+      <ul class="plan-features">
+        <li>6 Videos per month</li>
+        <li>Up to 15 min each</li>
+        <li>Cinematic color grading</li>
+        <li>Licensed music included</li>
+        <li>Unlimited revisions</li>
+        <li>48H turnaround</li>
+        <li>Motion graphics included</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="plan-btn">Start Pro →</button>
+    </div>
+
+    <!-- AGENCY -->
+    <div class="pricing-card fade-up fade-up-delay-2">
+      <div class="plan-name">AGENCY</div>
+      <div class="plan-desc">Full-scale production for agencies & high-volume brands.</div>
+      <div class="plan-price">
+        <span class="plan-currency">$</span>
+        <span class="plan-amount" id="price3">1499</span>
+        <span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-per-video" id="perVideo3">~$94 per video</div>
+      <div class="divider"></div>
+      <ul class="plan-features">
+        <li>16 Videos per month</li>
+        <li>Unlimited length</li>
+        <li>Premium color + LUT creation</li>
+        <li>Licensed music included</li>
+        <li>Unlimited revisions</li>
+        <li>24H turnaround</li>
+        <li>Full motion graphics suite</li>
+        <li>Dedicated editor + Slack</li>
+      </ul>
+      <button class="plan-btn">Contact Us →</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="testimonials-header fade-up">
+    <div class="section-label">Client Love</div>
+    <h2 class="section-title">WHAT CLIENTS<br>ARE SAYING</h2>
+  </div>
+  <div class="testimonials-track-wrap">
+    <div class="testimonials-track">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Framecut transformed our brand completely. The quality of editing is insane — our engagement doubled within 2 weeks of switching to their team.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">S</div>
+          <div>
+            <div class="author-name">Sarah Mitchell</div>
+            <div class="author-role">CEO, Elevate Brand Co.</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">I've worked with 3 other agencies. Framecut is in a different league. 48 hour turnaround, impeccable attention to detail, and they actually understand storytelling.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">J</div>
+          <div>
+            <div class="author-name">James Okafor</div>
+            <div class="author-role">YouTube Creator, 2.1M subs</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Our product launch video got 4M views organically. The color grading and motion graphics were absolutely next level. Worth every single dollar.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Amara Chen</div>
+            <div class="author-role">Founder, NovaTech</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Best investment we made this year. Our Reels now consistently hit 100K+ views. The team is responsive, talented, and genuinely cares about results.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">R</div>
+          <div>
+            <div class="author-name">Ryan Torres</div>
+            <div class="author-role">Marketing Director, Flux Agency</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Framecut's team just gets it. No lengthy briefs needed — they capture the brand voice perfectly every time. Unlimited revisions is not a gimmick, they truly nail it.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">L</div>
+          <div>
+            <div class="author-name">Lena Vasquez</div>
+            <div class="author-role">Creative Dir, Studio Bloom</div>
+          </div>
+        </div>
+      </div>
+      <!-- Duplicate for seamless loop -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Framecut transformed our brand completely. The quality of editing is insane — our engagement doubled within 2 weeks of switching to their team.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">S</div>
+          <div>
+            <div class="author-name">Sarah Mitchell</div>
+            <div class="author-role">CEO, Elevate Brand Co.</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">I've worked with 3 other agencies. Framecut is in a different league. 48 hour turnaround, impeccable attention to detail, and they actually understand storytelling.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">J</div>
+          <div>
+            <div class="author-name">James Okafor</div>
+            <div class="author-role">YouTube Creator, 2.1M subs</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Our product launch video got 4M views organically. The color grading and motion graphics were absolutely next level. Worth every single dollar.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Amara Chen</div>
+            <div class="author-role">Founder, NovaTech</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Best investment we made this year. Our Reels now consistently hit 100K+ views. The team is responsive, talented, and genuinely cares about results.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">R</div>
+          <div>
+            <div class="author-name">Ryan Torres</div>
+            <div class="author-role">Marketing Director, Flux Agency</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Framecut's team just gets it. No lengthy briefs needed — they capture the brand voice perfectly every time. Unlimited revisions is not a gimmick, they truly nail it.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">L</div>
+          <div>
+            <div class="author-name">Lena Vasquez</div>
+            <div class="author-role">Creative Dir, Studio Bloom</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="section-label fade-up" style="justify-content:center;"><span>Ready to Start?</span></div>
+  <h2 class="cta-title fade-up">
+    LET'S CREATE
+    <em>SOMETHING</em>
+    GREAT.
+  </h2>
+  <p class="cta-sub fade-up">Book a free 30-minute strategy call and get a custom quote for your project today.</p>
+  <div class="cta-actions fade-up">
+    <a href="mailto:hello@framecut.co" class="btn-primary">Book a Free Call</a>
+    <a href="#portfolio" class="btn-outline">See Our Work</a>
+  </div>
+  <p class="cta-note fade-up">No commitment · Response within 24 hours · Free consultation</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="nav-logo">FRAME<span>CUT</span></div>
+    <p>Premium video editing for brands, creators, and agencies who refuse to blend in.</p>
+    <div class="footer-socials">
+      <div class="social-btn">in</div>
+      <div class="social-btn">yt</div>
+      <div class="social-btn">ig</div>
+      <div class="social-btn">tw</div>
+    </div>
+  </div>
+  <div>
+    <div class="footer-col-title">Services</div>
+    <ul class="footer-links">
+      <li><a href="#services">Video Editing</a></li>
+      <li><a href="#services">Motion Graphics</a></li>
+      <li><a href="#services">Color Grading</a></li>
+      <li><a href="#services">Short Form Content</a></li>
+      <li><a href="#services">Sound Design</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Company</div>
+    <ul class="footer-links">
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Contact</div>
+    <ul class="footer-links">
+      <li><a href="mailto:hello@framecut.co">hello@framecut.co</a></li>
+      <li><a href="#">+1 (555) 000-0000</a></li>
+      <li><a href="#">Book a Call</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 FRAMECUT. All rights reserved.</p>
+  <p>Crafted with precision & passion.</p>
+</div>
+
+<script>
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+let rx = 0, ry = 0;
+function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+document.querySelectorAll('a, button, .service-card, .portfolio-item, .filter-btn').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorRing.style.width = '60px';
+    cursorRing.style.height = '60px';
+    cursor.style.transform = 'translate(-50%,-50%) scale(1.5)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorRing.style.width = '36px';
+    cursorRing.style.height = '36px';
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+  });
+});
+
+// ===== NAV SCROLL =====
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ===== HAMBURGER =====
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobileMenu').classList.add('open');
+});
+document.getElementById('closeMenu').addEventListener('click', closeMobileMenu);
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// ===== SCROLL REVEAL =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ===== BILLING TOGGLE =====
+let isAnnual = false;
+const prices = { monthly: [299, 699, 1499], annual: [239, 559, 1199] };
+const perVideos = { monthly: ['~$150 per video', '~$116 per video', '~$94 per video'], annual: ['~$120 per video', '~$93 per video', '~$75 per video'] };
+function toggleBilling() {
+  isAnnual = !isAnnual;
+  const toggle = document.getElementById('billingToggle');
+  toggle.classList.toggle('on', isAnnual);
+  const p = isAnnual ? prices.annual : prices.monthly;
+  const pv = isAnnual ? perVideos.annual : perVideos.monthly;
+  document.getElementById('price1').textContent = p[0];
+  document.getElementById('price2').textContent = p[1];
+  document.getElementById('price3').textContent = p[2];
+  document.getElementById('perVideo1').textContent = pv[0];
+  document.getElementById('perVideo2').textContent = pv[1];
+  document.getElementById('perVideo3').textContent = pv[2];
+}
+
+// ===== PORTFOLIO FILTER =====
+function filterPortfolio(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.portfolio-item').forEach(item => {
+    if (cat === 'all' || item.dataset.cat === cat) {
+      item.style.opacity = '1';
+      item.style.transform = 'scale(1)';
+    } else {
+      item.style.opacity = '0.2';
+      item.style.transform = 'scale(0.98)';
+    }
+    item.style.transition = 'opacity 0.4s, transform 0.4s';
+  });
+}
+
+// ===== SMOOTH SCROLL =====
+function scrollTo(selector) {
+  document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth' });
+}
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// ===== NUMBER COUNTER ANIMATION =====
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const step = target / 60;
+  const interval = setInterval(() => {
+    start += step;
+    if (start >= target) { el.textContent = target + suffix; clearInterval(interval); return; }
+    el.textContent = Math.floor(start) + suffix;
+  }, 16);
+}
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(num => {
+        const text = num.textContent;
+        const match = text.match(/(\d+)(.*)/);
+        if (match) animateCounter(num, parseInt(match[1]), match[2]);
+      });
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObserver.observe(statsEl);
+</script>
+</body>
+</html>
